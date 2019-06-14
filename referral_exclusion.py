@@ -26,7 +26,9 @@ for referral in referrals:
     domains.append(referral)
 
 # Open the website
-url = 'https://analytics.google.com/analytics/web/?authuser=1#/a3709343w7074644p7341275/admin/trackingreferral-exclusion-list/'
+url = 'https://analytics.google.com/analytics/web/?authuser=1#/'
+url += 'a53572537w86300453p89534365'
+url += '/admin/trackingreferral-exclusion-list/'
 webbrowser.open(url, new=1)
 
 # Set the coordinates for buttons and fields.

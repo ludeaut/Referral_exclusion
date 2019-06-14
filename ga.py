@@ -1,73 +1,36 @@
 # Import libraries
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from bs4 import BeautifulSoup
-import re
-import pandas as pd
-import os
+import time
+import json
 
-# Set the URL you want to webscrape from
-# url = 'https://analytics.google.com/analytics/web/?authuser=1#/a69568077w106628147p111548331/admin/trackingreferral-exclusion-list/'
-url = "http://kanview.ks.gov/PayRates/PayRates_Agency.aspx"
+# Set the URL
+url = 'https://analytics.google.com/analytics/web/?authuser=0#/'
+url += 'a53572537w86300453p89534365'
+url += '/admin/trackingreferral-exclusion-list/'
 
+# Open the web browser
 driver = webdriver.Chrome('./chromedriver')
 driver.implicitly_wait(30)
 driver.get(url)
 
-# import pyautogui # Do sudo pip3 install pyautogui
-#
-# pyautogui.hotkey('ctrl', 'space')
-# pyautogui.typewrite('thomas@itsnotthatkind.org')
+# Get login credentials
+with open("login.json", 'r') as f:
+	login = json.load(f)
 
-python_button = driver.find_element_by_id('MainContent_uxLevel1_Agencies_uxAgencyBtn_33') #FHSU
-python_button.click() #click fhsu link
+# Login with your Google Analytics account
+driver.execute_script("document.querySelector('.whsOnd.zHQkBf').value = arguments[0]", login['email'])
+driver.execute_script("document.getElementById('identifierNext').click()")
+time.sleep(2)
 
-#Selenium hands the page source to Beautiful Soup
-soup_level1=BeautifulSoup(driver.page_source, 'lxml')
+driver.execute_script("document.querySelector('.whsOnd.zHQkBf').value = arguments[0]", login['password'])
+driver.execute_script("document.getElementById('passwordNext').click()")
+time.sleep(2)
 
-datalist = [] #empty list
-x = 0 #counter
+# Add referral exclusions
 
-for link in soup_level1.find_all('a', id=re.compile("^MainContent_uxLevel2_JobTitles_uxJobTitleBtn_")):
-    ##code to execute in for loop goes here
-
-    #Selenium visits each Job Title page
-    python_button = driver.find_element_by_id('MainContent_uxLevel2_JobTitles_uxJobTitleBtn_' + str(x))
-    python_button.click() #click link
-
-    #Selenium hands of the source of the specific job page to Beautiful Soup
-    soup_level2=BeautifulSoup(driver.page_source, 'lxml')
-
-    #Beautiful Soup grabs the HTML table on the page
-    table = soup_level2.find_all('table')[0]
-
-    #Giving the HTML table to pandas to put in a dataframe object
-    df = pd.read_html(str(table),header=0)
-
-    #Store the dataframe in a list
-    datalist.append(df[0])
-
-    #Ask Selenium to click the back button
-    driver.execute_script("window.history.go(-1)")
-
-    #increment the counter variable before starting the loop over
-    x += 1
-
-#loop has completed
-
-#end the Selenium browser session
-driver.quit()
-
-#combine all pandas dataframes in the list into one big dataframe
-result = pd.concat([pd.DataFrame(datalist[i]) for i in range(len(datalist))],ignore_index=True)
-
-#convert the pandas dataframe to JSON
-json_records = result.to_json(orient='records')
-
-#get current working directory
-path = os.getcwd()
-
-#open, write, and close the file
-f = open(path + "\\fhsu_payroll_data.json","w") #FHSU
-f.write(json_records)
-f.close()
+time.sleep(15)
+iframe = driver.find_element_by_id("galaxyIframe")
+driver.execute_script("arguments[0].contentWindow.document.querySelector('#ID-m-content-content > div._GAnf > div.ID-adminTableControlBar._GAcub > div.ID-adminTableControl._GAfJb > button').click()", iframe)
+# document.querySelector('.W_DECORATE_ELEMENT._GASh._GAepb._GAmc-_GAxD-_GAmc').value = 'mollie.com'
+# driver.execute_script("document.querySelector('._GAD.W_DECORATE_ELEMENT._GAId').click()")
