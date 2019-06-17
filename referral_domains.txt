@@ -17,6 +17,7 @@ ideal.triodos.nl
 ideal.vanlanschot.com
 live.adyen.com
 mollie.com
+mpi.valitor.com
 pay.mollie.nl
 payment-web.omnikassa.rabobank.nl
 paypal.com

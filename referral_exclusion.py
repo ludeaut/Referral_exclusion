@@ -27,7 +27,7 @@ for referral in referrals:
 
 # Open the website
 url = 'https://analytics.google.com/analytics/web/?authuser=1#/'
-url += 'a53572537w86300453p89534365'
+url += 'a40160714w69262866p71360432'
 url += '/admin/trackingreferral-exclusion-list/'
 webbrowser.open(url, new=1)
 
